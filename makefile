@@ -1,13 +1,17 @@
+POBJS = integer.o real.o string.o dll.o sll.o queue.o bst.o scanner.o avl.o vertex.o edge.o binomial.o prim.o
 DLLOBJS = integer.o real.o string.o dll.o test-dll.o
 SLLOBJS = integer.o real.o string.o sll.o test-sll.o
 SOBJS = integer.o real.o string.o dll.o stack.o test-stack.o
 QOBJS = integer.o real.o string.o sll.o queue.o test-queue.o
-BOBJS = integer.o real.o string.o dll.o binomial.o binomial-0-0.o
+BOBJS = integer.o real.o string.o dll.o sll.o queue.o binomial.o binomial-0-8.o
 BSTOBJS = integer.o real.o string.o sll.o queue.o bst.o test-bst.o
 OOPTS = -Wall -Wextra -std=c99 -g -c
 EOPTS = -Wall -Wextra -std=c99 -g
 
-all : test-dll test-sll test-stack test-queue test-bst test-binomial0
+all : test-dll test-sll test-stack test-queue test-bst test-binomial0 prim
+
+prim : $(POBJS)
+	gcc $(EOPTS) -o prim $(POBJS) -lm
 
 test-dll : $(DLLOBJS)
 	gcc $(EOPTS) -o test-dll $(DLLOBJS)
@@ -25,7 +29,10 @@ test-bst : $(BSTOBJS)
 	gcc $(EOPTS) -o test-bst $(BSTOBJS)
 
 test-binomial0 : $(BOBJS)
-	gcc $(EOPTS) -o test-binomial0 $(BOBJS)
+	gcc $(EOPTS) -o test-binomial0 $(BOBJS) -lm 
+
+#test-prim : $(POBJS)
+	#gcc $(EOPTS) -o test-prim $(POBJS) -lm
 
 dll.o : dll.c dll.h
 	gcc $(OOPTS) dll.c
@@ -54,10 +61,19 @@ scanner.o : scanner.c scanner.h
 bst.o : bst.c bst.h
 	gcc $(OOPTS) bst.c
 
+vertex.o : vertex.c integer.h
+	gcc $(OOPTS) vertex.c
+
+edge.o : edge.c
+	gcc $(OOPTS) edge.c
+
+prim.o : prim.c integer.h real.h string.h sll.h queue.h bst.h scanner.h avl.h vertex.h edge.h binomial.h
+	gcc $(OOPTS) prim.c
+
 avl.o : avl.c integer.h real.h string.h sll.h queue.h bst.h avl.h
 	gcc $(OOPTS) avl.c
 
-binomial.o : binomial.c binomial.h dll.h
+binomial.o : binomial.c binomial.h dll.h sll.h queue.h
 	gcc $(OOPTS) binomial.c
 
 test-dll.o : test-dll.c integer.h dll.h
@@ -72,8 +88,8 @@ test-stack.o : test-stack.c integer.h dll.h stack.h
 test-queue.o : test-queue.c integer.h sll.h queue.h
 	gcc $(OOPTS) test-queue.c
 
-binomial-0-0.o : binomial-0-0.c integer.h real.h string.h dll.h
-	gcc $(OOPTS) binomial-0-0.c
+binomial-0-8.o : binomial-0-0.c integer.h real.h string.h dll.h
+	gcc $(OOPTS) binomial-0-8.c
 
 test-bst.o : test-bst.c integer.h real.h string.h sll.h queue.h
 	gcc $(OOPTS) test-bst.c
@@ -112,6 +128,6 @@ test : all
 	@echo
 
 clean   :
-	rm -f *.o test-dll test-sll test-stack test-queue test-bst test-binomial0
+	rm -f *.o test-dll test-sll test-stack test-queue test-bst test-binomial0 prim
 
 

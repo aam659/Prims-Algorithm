@@ -89,8 +89,8 @@ void *insertDLL(DLL *items,int index,void *value) {
 
 	else {							// Non-empty list
 		if (index == items->size) {			// Insert tail
-			cur = search(index - 1, items->head);
-			insertLast(items, newNode, cur);
+//			cur = search(index - 1, items->head);
+			insertLast(items, newNode, items->tail);
 		}	
 
 		else if (index == 0) {				// Insert head
@@ -390,6 +390,7 @@ void removeDLLall(DLL *items) {
 void *removeDLLnode(DLL *items, void *n) {
 	DLLNODE *node = n;					// void * is DLLNODE *
 	DLLNODE *head = getHead(items);
+	DLLNODE *tail = getTail(items);
 	DLLNODE *iterate = 0;
 	DLLNODE *iterateNext = 0;
 	DLLNODE *iteratePrevious = 0;
@@ -415,6 +416,17 @@ void *removeDLLnode(DLL *items, void *n) {
 		if (size == 1) setTail(items, 0);		// One node
 		
 		else setDLLNODEprevious(head, 0);
+	}
+
+	else if (iterate == tail) {
+		old = getDLLNODEvalue(iterate);			// Get tail value
+		oldNode = iterate;
+		setTail(items, iteratePrevious);
+		tail = getTail(items);
+
+		if (size == 1) setTail(items, 0);
+	
+		else setDLLNODEnext(tail, 0);
 	}
 	
 	else {
@@ -454,7 +466,7 @@ void lastDLL(DLL *items) {
 	DLLNODE *tail = getTail(items);
 
 	setIterator(items, tail);				// Set iterator to tail
-
+	
 	return;
 }
 

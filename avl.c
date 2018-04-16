@@ -57,7 +57,6 @@ static int getAVLVcount(AVLV *);
 static void setAVLVfactorL(AVLV *);
 static void setAVLVfactorR(AVLV *);
 static void setAVLVfactorB(AVLV *);
-//static void setAVLVfactor(AVLV *,int);
 static int getAVLVfactor(AVLV *);
 static void setAVLVheight(AVLV *,int);
 static int getAVLVheight(AVLV *);
@@ -65,7 +64,6 @@ static void setAVLVLHeight(AVLV *,int);
 static void setAVLVRHeight(AVLV *,int);
 static int getAVLVLHeight(AVLV *);
 static int getAVLVRHeight(AVLV *);
-//static bool isBalanced(BSTNODE *);
 static void adisplay(void *,FILE *);
 static int compareAVLV(void *,void *);
 static void swapper(BSTNODE *,BSTNODE *);
@@ -139,20 +137,12 @@ void insertAVL(AVL *t, void *v) {
 	
 		BSTNODE *x = findBST(tree, a);
 	
-//		BSTNODE *p = getBSTNODEparent(x);
-
-//		t->disp(getAVLVvalue(a), stdout);
-//		printf("\n");
-	
 		insertionFixup(t, x);
 
 		setAVLsize(t, avlSize + 1);
 
 		free(searchA);
 	
-	//	t->disp(getAVLVvalue(getBSTNODEvalue(getBSTroot(tree))), stdout);
-	//	printf("\n");	
-
 		return;
 	}
 
@@ -243,16 +233,11 @@ void *deleteAVL(AVL *t, void *v) {
 	BSTNODE *deleted = NULL;
 	AVLV *value = NULL;
 	void *actualValue = NULL;
-//	int oldHeight = 0;
-//	int oldFactor = 0;
 
 	count = findAVLcount(t, v);				// Determine count
 	result = findBST(tree, searchA);			// Determine value
 	
 	if (result == NULL) {
-//		printf("Value ");
-//		t->disp(getAVLVvalue(searchA), stdout);
-//		printf(" not found.\n");
 		free(searchA);					// Free extra node
 		return NULL;					// Node not in AVL
 	}
@@ -268,27 +253,13 @@ void *deleteAVL(AVL *t, void *v) {
 
 	decreaseAVLVcount(foundA);				// Update count
 	
-//	oldHeight = getAVLVheight(getBSTNODEvalue(result));
-//	oldFactor = getAVLVfactor(getBSTNODEvalue(result));
-
 	deleted = swapToLeafBST(tree, result);			// Swap to Leaf
 
 	value = getBSTNODEvalue(deleted);			// Get AVLV node
 
 	actualValue = getAVLVvalue(value);			// Get actual value
 
-//	t->disp(actualValue, stdout);
-//	printf("\n");
-
-//	setAVLVheight(getBSTNODEvalue(result), oldHeight);
-//	setAVLVfactor(getBSTNODEvalue(result), oldFactor);
-
-//	if (deleted == result) printf("yep\n");
-
 	deleteFixup(t, deleted);				// Call deleteFixup
-
-//	printf("%d\n", getAVLVfactor(getBSTNODEvalue(getBSTroot(tree))));
-//	printf("%d (height) %d (factor)\n", oldHeight, oldFactor);
 
 	pruneLeafBST(tree, deleted);				// Prune from tree
 
@@ -841,108 +812,57 @@ static void insertionFixup(AVL *t, BSTNODE *x) {
 	BST *tree = getBST(t);
 	BSTNODE *r = NULL;
 	BSTNODE *p = NULL;
-//	BSTNODE *p = getBSTNODEparent(x);
 	AVLV *y = NULL;
 	AVLV *pValue = NULL;
-//		p = getBSTNODEparent(x);
-//		if (p != NULL) pValue = getBSTNODEvalue(p);
-
-//	if (p != NULL) pValue = getBSTNODEvalue(p);
-//	t->disp(getAVLVvalue(a), stdout);
-//	printf("\n");
-
 	// loop while true
 	while (1) {
 		AVLV *a = getBSTNODEvalue(x);
 		r = getBSTroot(tree);
 		p = getBSTNODEparent(x);
 		if (p != NULL) pValue = getBSTNODEvalue(p);
-//		if (pValue == NULL) printf("how\n");
-		//t->disp(getAVLVvalue(pValue), stdout);
-//		printf("\n%d\n", getAVLVfactor(pValue));
 		
 		// x is the root
 		if (x == r) {
-			//printf("Root\n");
-/*			if ((getAVLVfactor(a) >= 2) || (getAVLVfactor(a) <= -2)) {
-				rotate(tree, favorite(x));
-				r = getBSTroot(tree);
-				setBalance(t, a);
-				setBalance(t, getBSTNODEvalue(r));
-			}*/
 			return;
 		}	
 
 		// favorite(a.parent) == sibling(a)
-		else if ((p != NULL) && (sibling(x) != NULL) && /*(getAVLVfactor(pValue) == LEFT) && (isLeftChild(sibling(x)))*/ (favorite(p) == sibling(x))) {
+		else if ((p != NULL) && (sibling(x) != NULL) && (favorite(p) == sibling(x))) {
 			// set balance of parent
-//			printf("Case1\n");
-	//		if (favorite(p) == NULL) printf("Yep\n");
-	//		t->disp(getAVLVvalue(getBSTNODEvalue(favorite(p))), stdout);
-	//		fprintf(stdout, "\n");
 			setBalance(t, pValue);
-//	printf("InsertionFixUp\n");
-//	if (sibling(x) == NULL) printf("NULL\n");
-//			t->disp(getAVLVvalue(getBSTNODEvalue(sibling(x))), stdout);
-//			fprintf(stdout, "\n");
 
 			return;
 		}
 
-/*		else if ((p != NULL) && (sibling(x) != NULL) && (getAVLVfactor(pValue) == RIGHT) && (isRightChild(sibling(x)))) {
-			setBalance(t, pValue);
-
-			return;
-		}*/
-
 		// Parent is balanced
-		else if ((p != NULL) && (pValue != NULL) && /*(getAVLVfactor(pValue) == BALANCED)*/ (favorite(p) == NULL)) {
-//			printf("Case2\n");
-//			printf("%d\n", getAVLVfactor(pValue));
+		else if ((p != NULL) && (pValue != NULL) && (favorite(p) == NULL)) {
 			// set balance of parent
 			setBalance(t, pValue);
-	//		printf("%d\n", getAVLVfactor(pValue));
-//			printf("%d\n", getAVLVfactor(pValue));
-//			printf("%d\n", getAVLVheight(pValue));
-//			printf("%d\n", getAVLVfactor(pValue));
 			x = p;
 			continue;
 		}
 
 		// Parent is unbalanced
 		else {
-//			printf("Testing3\n");
 			BSTNODE *yNode = favorite(x);
-			//BSTNODE *yNode = findBST(tree, y);
 			if (yNode != NULL ) y = getBSTNODEvalue(yNode);
 			
-//			if (yNode == NULL) printf("Damn\n");
-
 			if ((yNode != NULL) && (!linear(t, y))) {
-//				printf("Case3\n");
-				
 				// rotate y to x
 				rotate(tree, yNode, r);
 				// rotate y to p
 				rotate(tree, yNode, r);
-				
 				// set balance of x, p, and y
 				a = getBSTNODEvalue(x);
 				setBalance(t, a);
-
 				pValue = getBSTNODEvalue(p);
 				setBalance(t, pValue);
-
 				y = getBSTNODEvalue(yNode);
 				setBalance(t, y);
-
-//				printf("%d\n", getAVLVfactor(getBSTNODEvalue(getBSTroot(tree))));
 			}
 
 			// y, x, p are linear or no favorite
 			else {
-//				printf("Case4\n");
-
 				// rotate x to p
 				rotate(tree, x, r);
 				// set balance of p
@@ -1044,50 +964,17 @@ static void rotateRight(BST *t, BSTNODE *node, BSTNODE *root) {
 	if (node == NULL) return;
 
 	BSTNODE *oldParent = getBSTNODEparent(node);
-	//BSTNODE *parentLeft = getBSTNODEleft(oldParent);
-	//BSTNODE *parentRight = getBSTNODEright(oldParent);
 	BSTNODE *gp = NULL;
 	
 	if (oldParent != NULL) {
 		gp = getBSTNODEparent(oldParent);		// Old gp, possibly NULL
 	}
 
-//	BSTNODE *leftChild = getBSTNODEleft(node);		// Node's left child
 	BSTNODE *rightChild = getBSTNODEright(node);		// Node's right child
-//	BSTNODE *rightSubtree = getBSTNODEright(node);		// Right Subtree
-//	BSTNODE *childRightSubT = getBSTNODEright(leftChild);	// Left child right Subtree
-	BSTNODE *r = root; //getBSTroot(t);
-
-/*	if (childRightSubT != NULL) {
-		setBSTNODEleft(node, childRightSubT);
-	}
-	
-	if (leftChild != NULL) {
-		setBSTNODEparent(node, leftChild);
-		setBSTNODEright(leftChild, node);
-	}
-
-	if (node == r) setBSTroot(t, leftChild);		// Update root
-
-	else {							// Update parent
-		if (leftChild != NULL) {
-			setBSTNODEparent(leftChild, oldParent);
-		
-			if (parentLeft == node) {		// Node was left child
-				setBSTNODEleft(oldParent, leftChild);
-			}
-
-			else {
-				setBSTNODEright(oldParent, leftChild);
-			}
-		}
-	}
-
-	return;*/
+	BSTNODE *r = root; 					//getBSTroot(t);
 
 	if (oldParent == r) {					// Old parent is root
 		setBSTroot(t, node);				// Node now root
-		//TODO: MAKE SURE THIS IS OKAY
 		setBSTNODEparent(node, node);			// Root is own parent
 		r = getBSTroot(t);
 		

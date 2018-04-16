@@ -42,6 +42,7 @@ newVERTEX(int n)
     v->number = n;
     v->key = -1;
     v->flag = 0;
+    v->pred = 0;
     v->neighbors = newDLL(displayVERTEX,0);
     v->weights = newDLL(displayINTEGER,freeINTEGER);
     v->successors = newDLL(displayVERTEX,0);
@@ -54,6 +55,7 @@ freeVERTEX(void *w)
     VERTEX *v = w;
     freeDLL(v->neighbors);
     freeDLL(v->weights);
+    freeDLL(v->successors);
     free(v);
     }
 
