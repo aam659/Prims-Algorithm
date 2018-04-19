@@ -37,7 +37,7 @@ char* Name = 0;							// File name
 /*************** Private Methods ***************/
 static int processOptions(int,char **);
 void Fatal(char *,...);
-static AVL *writeToAVL(FILE *,BINOMIAL *);
+static void writeToAVL(FILE *,BINOMIAL *,AVL *,AVL *);
 static void update(void *,void *);
 static bool inList(DLL *,VERTEX *); 
 //static char *cleanFile(char *);
@@ -45,14 +45,13 @@ static bool inList(DLL *,VERTEX *);
 /*************** Main ***************/
 
 int main(int argc, char **argv) {
-	AVL *tree = NULL;
+	AVL *tree = newAVL(displayVERTEX, compareVERTEX, freeVERTEX);
 	AVL *edgeTree = newAVL(displayEDGE, compareEDGE, freeEDGE);
 	BINOMIAL *b = newBINOMIAL(displayVERTEX, compareVERTEX, update, freeVERTEX);
 	VERTEX *u = NULL;
 	VERTEX *pred = NULL;
 	DLL *neighbors = NULL;
 	DLL *weights = NULL;
-	//void *owner = NULL;
 	int key = 0;
 	int flag = 0;
 	
@@ -73,8 +72,8 @@ int main(int argc, char **argv) {
 			exit(1);
 		}
 
-		// Clean file and write vertices to AVL
-		tree = writeToAVL(fp, b);
+		// Write vertices and edges to AVL trees
+		writeToAVL(fp, b, tree, edgeTree);
 
 		displayAVL(tree, stdout);
 		displayBINOMIALdebug(b, stdout);
@@ -97,7 +96,6 @@ int main(int argc, char **argv) {
 
 		if (getVERTEXkey(u) == -1) break;
 
-		// TODO: BUILD MST STARTING HERE WITH AVL TREE FOR EDGES???
 		// TODO: QUEUE FOR MST PRINTING???
 
 		if (pred != 0) {
@@ -105,10 +103,9 @@ int main(int argc, char **argv) {
 		}
 
 		// ADDED FOR MST
-		if (getVERTEXkey(u) != 0) {			// Not start vertex
+/*		if (getVERTEXkey(u) != 0) {			// Not start vertex
 			// Add edge to MST
-			insertAVL(edgeTree, newEDGE(pred, u, uWeight));	
-		}
+		}*/
 
 		firstDLL(neighbors);
 		firstDLL(weights);
@@ -246,7 +243,7 @@ static int processOptions(int argc, char **argv) {
 /* writeToAVL Method */
 /* Writes vertices to a given fp to an AVL tree. */
 
-static AVL *writeToAVL(FILE *fp, BINOMIAL *b) {
+static AVL *writeToAVL(FILE *fp, BINOMIAL *b, AVL *tree, AVL *edgeTree) {
 	char *x = 0;
 	char *y = 0;
 	int j = 0;
@@ -256,8 +253,8 @@ static AVL *writeToAVL(FILE *fp, BINOMIAL *b) {
 	VERTEX *second = 0;
 	VERTEX *found1 = 0;
 	VERTEX *found2 = 0;
-	AVL *tree = newAVL(displayVERTEX, compareVERTEX, freeVERTEX);
-
+	int v1 = 0;
+	int v2 = 0;
 
 	x = readToken(fp);
 
@@ -277,6 +274,8 @@ static AVL *writeToAVL(FILE *fp, BINOMIAL *b) {
 			if (isdigit(x[0]) && (j == 1)) {
 				VERTEX *w = newVERTEX(atoi(x));
 				second = w;
+				v1 = getVERTEXnumber(first);
+				v2 = getVERTEXnumber(second);
 				if (findAVLcount(tree, w) == 0) {
 					setVERTEXowner(w, insertBINOMIAL(b, w));
 					insertAVL(tree, w);
@@ -305,8 +304,14 @@ static AVL *writeToAVL(FILE *fp, BINOMIAL *b) {
 						insertVERTEXweight(found1, weight);
 						insertVERTEXweight(found2, weight);
 					}
+					
+					// Add edge pairs to AVL EDGE tree
+					EDGE *vW = newEDGE(v1, v2, weight);
+					EDGE *wV = newEDGE(v2, v1, weight);
+					insertAVL(edgeTree, vW);
 				}
 			}
+			
 			
 			++j;
 			if (j > 1) { j = 0; }
@@ -321,7 +326,7 @@ static AVL *writeToAVL(FILE *fp, BINOMIAL *b) {
 
 	decreaseKeyBINOMIAL(b, getVERTEXowner(temp), temp);
 
-	return tree;
+	return;
 }
 
 static bool inList(DLL *neighbor1, VERTEX *entry) {

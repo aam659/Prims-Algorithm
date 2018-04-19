@@ -1,7 +1,7 @@
 /* Author: Alan Manning */
 /* Class: CS201 Data Structures and Algorithms */
 /* Assignment 3 */
-/* Date: 3 March, 2018 */
+/* Date: 3 April, 2018 */
 
 /* This is the implementation file for the header file 
 "binomial.h", which is used to create a binomial heap 'class'
